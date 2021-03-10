@@ -1,0 +1,43 @@
+BR: Brasil
+VN: Venezuela
+PR: Peru
+AR: Argentina
+MX: México
+CB: Cuba
+NY: New York
+CA: Califórnia
+LB: Labrador
+OT: Ottawa
+VC: Vancouver
+MC: Mackenzie
+AL: Alaska
+GL: Groenlândia
+IS: Islândia 
+IN: Inglaterra
+FR: França
+GE: Alemanha
+PL: Polônia
+MW: Moscow
+SC: Suécia
+AG: Argélia
+EG: Egito
+SD: Sudão
+CG: Congo
+AS: África do sul
+MG: Madagascar
+OM: Oriente médio
+ID: Índia
+VT: Vietnam
+CN: China
+MO: Mongólia
+RL: Aral
+OK: Ornsk
+DU: Dudinka
+TH: Tchita
+VD: Vladvostok
+SB: Sibéria
+JP: Japão
+SM: Sumatra
+NG: Nova Guinea
+AU: Austrália
+BO: Bornea
