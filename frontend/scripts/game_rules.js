@@ -1,4 +1,4 @@
-var parties = {
+var parties_info = {
     ANQ: {
         name: "Anarquismo",
         color: "#000000",

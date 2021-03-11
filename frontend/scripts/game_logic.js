@@ -47,6 +47,28 @@ countries = {
     BO: {name: "Bornea"         , info: {party: null, ground_units: 0}, canvas: []}
 }
 
+players = [];
+parties = [];
+
+parties_style = {
+    ANQ: {back_color: "#000000", front_color: "#ffffff", icon: "img/icons/anq.svg"},
+    ISI: {back_color: "#aaaaaa", front_color: "#000000", icon: "img/icons/isis.svg"},
+    FDL: {back_color: "#4cc963", front_color: "#000000", icon: "img/icons/feudalismo.svg"},
+    VKG: {back_color: "#4cc993", front_color: "#000000", icon: "img/icons/vikings.svg"},
+    ZMB: {back_color: "#4e9335", front_color: "#000000", icon: "img/icons/zombie.svg"},
+    ONU: {back_color: "#23cec3", front_color: "#000000", icon: "img/icons/onu.svg"},
+    PRT: {back_color: "#7c3bdd", front_color: "#000000", icon: "img/icons/pirate.svg"},
+    CAT: {back_color: "#d6d6d6", front_color: "#000000", icon: "img/icons/igreja.svg"},
+    NZI: {back_color: "#ffffff", front_color: "#000000", icon: "img/icons/nazi.svg"},
+    FSC: {back_color: "#d85136", front_color: "#000000", icon: "img/icons/fascism.svg"},
+    JEY: {back_color: "#d8366c", front_color: "#000000", icon: "img/icons/joeyismo.svg"},
+    SQR: {back_color: "#d6262f", front_color: "#000000", icon: "img/icons/spqr.svg"},
+    RST: {back_color: "#a50e16", front_color: "#ffffff", icon: "img/icons/resistencia.svg"},
+    SCL: {back_color: "#f40c17", front_color: "#000000", icon: "img/icons/socialismo.svg"},
+    CTL: {back_color: "#efcc2f", front_color: "#000000", icon: "img/icons/capitalism.svg"},
+    PTN: {back_color: "#4043f7", front_color: "#000000", icon: "img/icons/puritanism.svg"}
+}
+
 function show_party_info() {
 
 }
@@ -117,14 +139,14 @@ function convert_to_final_html(input) {
         return input;
     var output = input.name;
     for (var i = 0; i < input.hover.length; i++) {
-        output = output.replace(input.hover[i].word, `<a onmouseover="${input.hover[i].action}" onmouseleave="hide_info();">${input.hover[i].word}</a>`);
+        output = output.replace(input.hover[i].word, `<a onmouseover="${input.hover[i].action}" onmouseleave="hide_info();" class="party-info-a">${input.hover[i].word}</a>`);
     }
     return output;
 }
 
 function get_party_info_by_id(p) {
-    var party = parties[p];
-    var response = "<div>";
+    var party = parties_info[p];
+    var response = "";
 
     response += "<h1>" + party.name + "</h1>";
     response += "<h3>Objetivo: " + convert_to_final_html(party.goal) + "</h3>";
@@ -177,12 +199,22 @@ function get_party_info_by_id(p) {
     response += "<h3>Líder: " + convert_to_final_html(party.leader) + "</h3>";
     response += "<h3>Local de Início: " + convert_to_final_html(party.start) + "</h3>";
 
-    return response + "</div>";
+    return response;
 }
 
 function update_lobby_party_info(party) {
     $('#class-info-place').html('');
     $('#class-info-place').html(get_party_info_by_id(party));
+    $('.btn-class-selector').removeClass("btn-info");
+    $(`#btn-class-${party}`).addClass("btn-info");
+    $('#class-info-holder').height($(window).height() - $('#class-info-buttons').height() - $('#class-info-control').height() - 10);
+}
+
+function show_alert(type, message) {
+    $('#alert-placeholder').html(`<div class="alert alert-${type} alert-dismissible error" id="error">
+                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                                    ${message}
+                                  </div>`);
 }
 
 function show_info(key) {
@@ -196,4 +228,8 @@ function show_info(key) {
 
 function hide_info() {
     $('#info-msg').hide();
+}
+
+function write_line_to_lobby_log(line) {
+    $('#lobby-log').html($('#lobby-log').html() + line + "<br>");
 }

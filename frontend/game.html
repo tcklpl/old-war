@@ -12,6 +12,7 @@
     <script type="text/javascript" src="scripts/socket.io.min.js"></script>
     <script type="text/javascript" src="scripts/game_rules.js"></script>
     <script type="text/javascript" src="scripts/game_logic.js"></script>
+    <script type="text/javascript" src="scripts/game_connection_logic.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" 
     integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" 
@@ -75,19 +76,28 @@
         z-index: 20;
     }
 
-    .btn > img {
+    .btn-class-selector > img {
         margin-right: 15px !important;
         display: inline-block;
-        width: 50px;
-        height: 50px;
+        width: 30px;
+        height: 30px;
     }
 
-    .lobby-parties-info {
-        overflow: auto;
+    .class-info-holder {
+        overflow: auto !important;
+        display: flex;
+        flex-flow: column;
     }
 
-    .lobby-parties-info > a {
-        color:rgb(255, 91, 91);
+    #class-info-place {
+        position: relative;
+        
+    }
+
+    .party-info-a {
+        color:rgb(255, 91, 91) !important;
+        text-decoration: underline !important;
+        cursor: pointer;
     }
 
     .info-msg-box {
@@ -97,6 +107,26 @@
         padding: 5px;
         border-radius: 5px;
         box-shadow: 0px 0px 5px #555555;
+        max-width: 40vw;
+        pointer-events: none;
+    }
+
+    .class-info-control > button {
+        top: 5px;
+    }
+
+    .lobby-log {
+        width: calc(100% - 20px);
+        overflow-y: scroll;
+        background-color: #eee;
+        position: absolute;
+        height: 20%;
+        max-height: 250px;
+        bottom: 5px;
+        border-radius: 5px;
+        padding: 5px;
+        right: 10px;
+        left: 10px;
     }
 </style>
 
@@ -135,26 +165,36 @@
                 <h2 id="lobby-name"></h2>
                 <a id="lobby-player-count"></a>
                 <ul id="lobby-player-list" class="list-group"></ul>
+
+                <div class="lobby-log" id="lobby-log"></div>
             </div>
             <div class="col-xs-12 col-sm-6 col-md-8 float-right lobby-parties-info">
-                <button class="btn btn-default" onclick="update_lobby_party_info('ANQ');"><img src="img/icons/anq.svg">Anarquismo</button>
-                <button class="btn btn-default" onclick="update_lobby_party_info('ISI');"><img src="img/icons/isis.svg">ISIS</button>
-                <button class="btn btn-default" onclick="update_lobby_party_info('FDL');"><img src="img/icons/feudalismo.svg">Feudalismo</button>
-                <button class="btn btn-default" onclick="update_lobby_party_info('VKG');"><img src="img/icons/vikings.svg">Vikings</button>
-                <button class="btn btn-default" onclick="update_lobby_party_info('ZMB');"><img src="img/icons/zombie.svg">Zumbis</button>
-                <button class="btn btn-default" onclick="update_lobby_party_info('ONU');"><img src="img/icons/onu.svg">ONU</button>
-                <button class="btn btn-default" onclick="update_lobby_party_info('PRT');"><img src="img/icons/pirate.svg">Piratas</button>
-                <button class="btn btn-default" onclick="update_lobby_party_info('CAT');"><img src="img/icons/igreja.svg">Igreja</button>
-                <button class="btn btn-default" onclick="update_lobby_party_info('NZI');"><img src="img/icons/nazi.svg">Nazismo</button>
-                <button class="btn btn-default" onclick="update_lobby_party_info('FSC');"><img src="img/icons/fascism.svg">Fascismo</button>
-                <button class="btn btn-default" onclick="update_lobby_party_info('JEY');"><img src="img/icons/joeyismo.svg">Joeyismo</button>
-                <button class="btn btn-default" onclick="update_lobby_party_info('SQR');"><img src="img/icons/spqr.svg">SPQR</button>
-                <button class="btn btn-default" onclick="update_lobby_party_info('RST');"><img src="img/icons/resistencia.svg">Resistência</button>
-                <button class="btn btn-default" onclick="update_lobby_party_info('SCL');"><img src="img/icons/socialismo.svg">Socialismo</button>
-                <button class="btn btn-default" onclick="update_lobby_party_info('CTL');"><img src="img/icons/capitalism.svg">Capitalismo</button>
-                <button class="btn btn-default" onclick="update_lobby_party_info('PTN');"><img src="img/icons/puritanism.svg">Puritanismo</button>
-                <div class="col-xs-12">
+                
+                <div class="col-xs-12 class-info-buttons" id="class-info-buttons">
+                    <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('ANQ');" ondblclick="set_player_party('ANQ');" id="btn-class-ANQ"><img src="img/icons/anq.svg">Anarquismo</button>
+                    <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('ISI');" ondblclick="set_player_party('ISI');" id="btn-class-ISI"><img src="img/icons/isis.svg">ISIS</button>
+                    <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('FDL');" ondblclick="set_player_party('FDL');" id="btn-class-FDL"><img src="img/icons/feudalismo.svg">Feudalismo</button>
+                    <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('VKG');" ondblclick="set_player_party('VKG');" id="btn-class-VKG"><img src="img/icons/vikings.svg">Vikings</button>
+                    <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('ZMB');" ondblclick="set_player_party('ZMB');" id="btn-class-ZMB"><img src="img/icons/zombie.svg">Zumbis</button>
+                    <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('ONU');" ondblclick="set_player_party('ONU');" id="btn-class-ONU"><img src="img/icons/onu.svg">ONU</button>
+                    <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('PRT');" ondblclick="set_player_party('PRT');" id="btn-class-PRT"><img src="img/icons/pirate.svg">Piratas</button>
+                    <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('CAT');" ondblclick="set_player_party('CAT');" id="btn-class-CAT"><img src="img/icons/igreja.svg">Igreja</button>
+                    <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('NZI');" ondblclick="set_player_party('NZI');" id="btn-class-NZI"><img src="img/icons/nazi.svg">Nazismo</button>
+                    <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('FSC');" ondblclick="set_player_party('FSC');" id="btn-class-FSC"><img src="img/icons/fascism.svg">Fascismo</button>
+                    <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('JEY');" ondblclick="set_player_party('JEY');" id="btn-class-JEY"><img src="img/icons/joeyismo.svg">Joeyismo</button>
+                    <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('SQR');" ondblclick="set_player_party('SQR');" id="btn-class-SQR"><img src="img/icons/spqr.svg">SPQR</button>
+                    <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('RST');" ondblclick="set_player_party('RST');" id="btn-class-RST"><img src="img/icons/resistencia.svg">Resistência</button>
+                    <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('SCL');" ondblclick="set_player_party('SCL');" id="btn-class-SCL"><img src="img/icons/socialismo.svg">Socialismo</button>
+                    <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('CTL');" ondblclick="set_player_party('CTL');" id="btn-class-CTL"><img src="img/icons/capitalism.svg">Capitalismo</button>
+                    <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('PTN');" ondblclick="set_player_party('PTN');" id="btn-class-PTN"><img src="img/icons/puritanism.svg">Puritanismo</button>
+                </div>
+                
+                <div class="col-xs-12 class-info-holder" id="class-info-holder">
                     <div id="class-info-place"></div>
+                </div>
+
+                <div class="col-xs-12 class-info-control" id="class-info-control">
+                    <button class="btn btn-success">Iniciar Jogo</button>
                 </div>
             </div>
         </div>
@@ -412,7 +452,7 @@
         $('#game-select-lobby').hide();
         $('#info-msg').hide();
 
-        puuid = null;
+        pname = null;
 
         selected = false;
         last_selected = null;
@@ -422,14 +462,7 @@
             mouse_y = event.pageY;
         });
 
-        function show_alert(type, message) {
-            $('#alert-placeholder').html(`<div class="alert alert-${type} alert-dismissible error" id="error">
-                                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                                            ${message}
-                                          </div>`);
-        }
-
-        $(document).ready(function() {                                               
+        $(document).ready(function() { 
             $('#warmap').mapster({
                 mapKey: 'data-country',
                 singleSelect: true,
@@ -466,8 +499,6 @@
 
             canvas_populate();
         });
-        
-        var socket = io();
 
         $('#join-form').submit(function(e) {
             e.preventDefault();
@@ -477,7 +508,7 @@
             var name = $('#jfj-nm');
 
             if (room.val() && name.val()) {
-                socket.emit('join room', room.val(), pass.val(), name.val());
+                request_room_join(room.val(), pass.val(), name.val());
                 room.val('');
                 pass.val('');
                 name.val('');
@@ -492,45 +523,12 @@
             var name = $('#jfc-nm');
 
             if (room.val() && name.val()) {
-                socket.emit('create room', room.val(), pass.val(), name.val());
+                request_room_creation(room.val(), pass.val(), name.val());
                 room.val('');
                 pass.val('');
                 name.val('');
             }
         });
-
-        function update_player_list_from_json(playerlist) {
-            var allplayers = JSON.parse(playerlist);
-            $('#lobby-player-list').empty();
-            for (var i in allplayers) {
-                $('#lobby-player-list').append('<li class="list-group-item">' + allplayers[i].name + "</li>");
-            }
-            $('#lobby-player-count').html('Jogadores no lobby: ' + allplayers.length);
-        }
-
-        socket.on('join error', (msg) => {
-            show_alert("danger", "Erro ao entrar: " + msg);
-        });
-
-        socket.on('join success', (uuid, room) => {
-            puuid = uuid;
-            $('#game-select-join').hide();
-            $('#game-select-lobby').show();
-            $('#lobby-name').html('Lobby: ' + room);
-        });
-
-        socket.on('create error', (msg) => {
-            show_alert("danger", "Erro ao criar sala: " + msg);
-        });
-
-        socket.on('player joined', (players, name) => {
-            update_player_list_from_json(players);
-        });
-
-        socket.on('player left', (players, name) => {
-            update_player_list_from_json(players);
-        });
-
     </script>
 
 </body>
