@@ -1,3 +1,6 @@
+mouse_x = 0;
+mouse_y = 0;
+
 countries = {
     BR: {name: "Brasil"         , info: {party: null, ground_units: 0}, canvas: []},
     VN: {name: "Venezuela"      , info: {party: null, ground_units: 0}, canvas: []},
@@ -42,201 +45,6 @@ countries = {
     NG: {name: "Nova Guinea"    , info: {party: null, ground_units: 0}, canvas: []},
     AU: {name: "Austrália"      , info: {party: null, ground_units: 0}, canvas: []},
     BO: {name: "Bornea"         , info: {party: null, ground_units: 0}, canvas: []}
-}
-
-var parties = {
-    ANQ: {
-        name: "Anarquismo",
-        color: "#000000",
-        goal: "O Anarquismo tem como único objetivo ser o inimigo de qualquer civilização que tenha adotado um sistema político. Ele é capaz de ganhar se de alguma forma, todas as formas de governo que possuem um estado forem destruídas ou se renderem",
-        rules: ["Não pode fazer alianças", "Deve atacar toddo turno"],
-        passive: "Se não houver nenhuma tropa no país, automaticamente esse país pertence ao Anarquismo",
-        bonus: ["A cada fim de turno, o Anarquismo ganha 2 tropas que podem ser livremente distribuídas", "Ganhar um combate lhe beneficia com +1 no dado (acumulativo por 1 turno)", "Caso o Anarquismo ganhe os quatro ataques seguidos, as civilizações que sofreram os ataques serão Pressionadas por 1 Turno"],
-        special_moves: [{name: "Anarquia de Regras", hover: [{word: "Anarquia de Regras", action: "show_info('anarquia de regras');"}]}],
-        special_units: [{name: "Black Block", hover: [{word: "Black Block", action: "show_info('black block');"}]}],
-        leader: null,
-        start: null
-    },
-    ISI: {
-        name: "ISIS",
-        color: "#555555",
-        goal: "Destruir tudo (inclusive eles mesmos)",
-        rules: [{name: "ISIS só pode posicionar peças por método de recrutamento", hover: [{word: "recrutamento", action: "show_info('recrutamento');"}]}],
-        passive: [{name: "Se o ISIS tiver uma quantidade igual ou inferior a 6 peças, quando elas forem destruídas, elas ativam Allahu Ahkbar", hover: [{word: "Allahu Ahkbar", action: "show_info('allahu akbar');"}]}],
-        bonus: [{name: "Cada vez que Allahu Ahkbar é utilizado com sucesso e consegue matar mais da metade das tropas do país, ele vai Pressionar as nações atacadas", hover: [{word: "Allahu Ahkbar", action: "show_info('allahu akbar');"}]}],
-        special_moves: [{name: "Allahu Akbar", hover: [{word: "Allahu Ahkbar", action: "show_info('allahu akbar');"}]}],
-        special_units: [{name: "Veículo Bomba", hover: [{word: "Veículo Bomba", action: "show_info('veiculo bomba');"}]}],
-        leader: "Osama Bin Laden",
-        start: "Oriente Médio"
-    },
-    FDL: {
-        name: "Feudalismo",
-        color: "#40ff19",
-        goal: "Exterminar os hereges e conquistar a Terra Sancta",
-        rules: ["O Feudalismo, como um exército centralizado, só pode ter dois movimentos por turno, sendo que um pode ser de ataque e o outro obrigatoriamente será de movimentação"],
-        passive: ["Os exércitos de defesa podem ser enviados para as Muralhas sem restrição de movimentação"],
-        bonus: ["Ao conquistar um território, o Senhor Feudal recebe um pagamento como imposto, ganhando +1 tropa no território recém anexado"],
-        special_moves: [{name: "Muralhas", hover: [{word: "Muralhas", action: "show_info('muralhas');"}]}],
-        special_units: [{name: "Dragão", hover: [{word: "Dragão", action: "show_info('dragao');"}]}],
-        leader: "Carlos Magno",
-        start: "França"
-    },
-    VKG: {
-        name: "Vikings",
-        color: "#ffcc66",
-        goal: "Os Vikings precisam escolher uma civilização arqui-inimiga e destruí-la. Se outra civilização derrotar seu inimigo, os Vikings perdem",
-        rules: ["Sempre que os Vikings perderem ou ganhar três batalhas em sequência, eles entrarão em luto com festividades pelos mortos e muita cerveja, impedindo-os de atacar no próximo turno"],
-        passive: ["Tropas Vikings não são desmoralizadas por HABILIDADES que causam debuffs em dados (Todavia, Unidades Especiais ainda são válidas)"],
-        bonus: ["Se tropas Viking estiverem em desvantagem que tenha no mínimo 3 tropas em diferença, eles atacarão com +1 no dado"],
-        special_moves: ["Vikings podem roubar navios de Puritanos e Piratas ao vencerem um ataque contra estes"],
-        special_units: [{name: "Thor", hover: [{word: "Thor", action: "show_info('thor');"}]}, {name: "Soluço", hover: [{word: "Soluço", action: "show_info('soluco');"}]}],
-        leader: "Ragnar",
-        start: "Suécia ou Groenlândia"
-    },
-    ZMB: {
-        name: "Zumbis",
-        color: "#116600",
-        goal: "Dominar o Mundo",
-        rules: ["Todos os jogadores estão contra você", "Só inicia com uma peça e não gera mais exército", "Se estiver sem peças por 3 turnos, perde"],
-        passive: ["Matar tropas instantaneamente as transforma em Zumbis"],
-        bonus: ["A cada 10 zumbis, eles formam uma horda, ganhando +1 no dado"],
-        special_moves: ["Cada turno pode rodar um dado sobre uma batalha que ocorreu no Mundo. Se o número for superior ou igual a 4, todas as unidades mortas se transformam em zumbis"],
-        special_units: null,
-        leader: "Dr. Zumbão",
-        start: null
-    },
-    ONU: {
-        name: "ONU",
-        color: "#80bfff",
-        goal: "Garantir a Paz Mundial",
-        rules: ["Não pode atacar nem gerar exército. Começa apenas com 1 peça"],
-        passive: ["É capaz de enviar tropas para defesa de qualquer país desde que estejam em seu limite físico (Até 3 movimentos)"],
-        bonus: ["Pode continuar no jogo mesmo sem territórios, desde que possua sua sede em Nova Iorque e o país dominante mantenha a ONU"],
-        special_moves: [{name: "Sanções", hover: [{word: "Sanções", action: "show_info('sancoes');"}]}, {name: "Bomba Nuclear", hover: [{word: "Bomba Nuclear", action: "show_info('bomba nuclear');"}]}],
-        special_units: null,
-        leader: "Barry",
-        start: "New York"
-    },
-    PRT: {
-        name: "Piratas",
-        color: "#0022cc",
-        goal: "",
-        rules: [],
-        passive: [],
-        bonus: [],
-        special_moves: [],
-        special_units: [],
-        leader: "",
-        start: ""
-    },
-    CAT: {
-        name: "Igreja Católica",
-        color: "#aaaaaa",
-        goal: "",
-        rules: [],
-        passive: [],
-        bonus: [],
-        special_moves: [],
-        special_units: [],
-        leader: "",
-        start: ""
-    },
-    NZI: {
-        name: "Nazismo",
-        color: "#ffffff",
-        goal: "",
-        rules: [],
-        passive: [],
-        bonus: [],
-        special_moves: [],
-        special_units: [],
-        leader: "",
-        start: ""
-    },
-    FSC: {
-        name: "Fascismo",
-        color: "#ff8080",
-        goal: "",
-        rules: [],
-        passive: [],
-        bonus: [],
-        special_moves: [],
-        special_units: [],
-        leader: "",
-        start: ""
-    },
-    JEY: {
-        name: "Joeyismo",
-        color: "#800000",
-        goal: "",
-        rules: [],
-        passive: [],
-        bonus: [],
-        special_moves: [],
-        special_units: [],
-        leader: "",
-        start: ""
-    },
-    SQR: {
-        name: "SPQR",
-        color: "#661100",
-        goal: "",
-        rules: [],
-        passive: [],
-        bonus: [],
-        special_moves: [],
-        special_units: [],
-        leader: "",
-        start: ""
-    },
-    RST: {
-        name: "Resistência",
-        color: "#ff3333",
-        goal: "",
-        rules: [],
-        passive: [],
-        bonus: [],
-        special_moves: [],
-        special_units: [],
-        leader: "",
-        start: ""
-    },
-    SCL: {
-        name: "Socialismo",
-        color: "#ff0000",
-        goal: "",
-        rules: [],
-        passive: [],
-        bonus: [],
-        special_moves: [],
-        special_units: [],
-        leader: "",
-        start: ""
-    },
-    CTL: {
-        name: "Capitalismo",
-        color: "#ffff33",
-        goal: "",
-        rules: [],
-        passive: [],
-        bonus: [],
-        special_moves: [],
-        special_units: [],
-        leader: "",
-        start: ""
-    },
-    PTN: {
-        name: "Puritanismo",
-        color: "#e69900",
-        goal: "",
-        rules: [],
-        passive: [],
-        bonus: [],
-        special_moves: [],
-        special_units: [],
-        leader: "",
-        start: ""
-    }
 }
 
 function show_party_info() {
@@ -300,4 +108,92 @@ function set_game_screen_color(color) {
 function get_content_div_per_country(country) {
     c = countries[country];
     return `<div id="gui-country-info">País: <b>${c.name}</b></div>`;
+}
+
+function convert_to_final_html(input) {
+    if (!input)
+        return "N/A";
+    if (typeof input == "string")
+        return input;
+    var output = input.name;
+    for (var i = 0; i < input.hover.length; i++) {
+        output = output.replace(input.hover[i].word, `<a onmouseover="${input.hover[i].action}" onmouseleave="hide_info();">${input.hover[i].word}</a>`);
+    }
+    return output;
+}
+
+function get_party_info_by_id(p) {
+    var party = parties[p];
+    var response = "<div>";
+
+    response += "<h1>" + party.name + "</h1>";
+    response += "<h3>Objetivo: " + convert_to_final_html(party.goal) + "</h3>";
+
+    response += "<h3>Regras:</h3>";
+    if (party.rules) {
+        for (var i = 0; i < party.rules.length; i++) {
+            response += convert_to_final_html(party.rules[i]) + "<br>";
+        }
+    } else {
+        response += "N/A";
+    }
+
+    response += "<h3>Passivas:</h3>";
+    if (party.passive) {
+        for (var i = 0; i < party.passive.length; i++) {
+            response += convert_to_final_html(party.passive[i]) + "<br>";
+        }
+    } else {
+        response += "N/A";
+    }
+    
+    response += "<h3>Bônus:</h3>";
+    if (party.bonus) {
+        for (var i = 0; i < party.bonus.length; i++) {
+            response += convert_to_final_html(party.bonus[i]) + "<br>";
+        }
+    } else {
+        response += "N/A";
+    }
+    
+    response += "<h3>Movimentos Especiais:</h3>";
+    if (party.special_moves) {
+        for (var i = 0; i < party.special_moves.length; i++) {
+            response += convert_to_final_html(party.special_moves[i]) + "<br>";
+        }
+    } else {
+        response += "N/A";
+    }
+    
+    response += "<h3>Tropas Especiais:</h3>";
+    if (party.special_units) {
+        for (var i = 0; i < party.special_units.length; i++) {
+            response += convert_to_final_html(party.special_units[i]) + "<br>";
+        }
+    } else {
+        response += "N/A";
+    }
+    
+    response += "<h3>Líder: " + convert_to_final_html(party.leader) + "</h3>";
+    response += "<h3>Local de Início: " + convert_to_final_html(party.start) + "</h3>";
+
+    return response + "</div>";
+}
+
+function update_lobby_party_info(party) {
+    $('#class-info-place').html('');
+    $('#class-info-place').html(get_party_info_by_id(party));
+}
+
+function show_info(key) {
+    var info = parties_dict[key];
+    if (!info) return;
+    $('#info-msg').html(info);
+    $('#info-msg').css('top', mouse_y);
+    $('#info-msg').css('left', mouse_x);
+    $('#info-msg').show();
+}
+
+function hide_info() {
+    $('#info-msg').hide();
 }
