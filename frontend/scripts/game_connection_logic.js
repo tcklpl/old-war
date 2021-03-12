@@ -12,6 +12,7 @@ function update_player_list_from_json(playerlist) {
     var allplayers = JSON.parse(playerlist);
     players = allplayers;
     $('#lobby-player-list').empty();
+    var all_selected = true;
     for (var i in allplayers) {
         if (allplayers[i].party != "null") {
             var party_style = parties_style[allplayers[i].party];
@@ -34,9 +35,15 @@ function update_player_list_from_json(playerlist) {
                                             </li>`);
         } else {
             $('#lobby-player-list').append('<li class="list-group-item">' + allplayers[i].name + "</li>");
+            all_selected = false;
         }
     }
     $('#lobby-player-count').html('Jogadores no lobby: ' + allplayers.length);
+    if (all_selected) {
+        $('#btn-start-game').removeClass('btn-secondary');
+        $('#btn-start-game').addClass('btn-success');
+        $('#btn-start-game').attr('disabled', false);
+    }
 }
 
 function get_player_by_name(name) {
@@ -86,6 +93,14 @@ function leave_current_party() {
     socket.emit('lobby leave party');
 }
 
+function leave_lobby() {
+    socket.emit('lobby leave');
+}
+
+function start_game() {
+    socket.emit('game start');
+}
+
 //#region Socket events
 socket.on('join error', (msg) => {
     show_alert("danger", "Erro ao entrar: " + msg);
@@ -95,7 +110,19 @@ socket.on('join success', (name, room) => {
     pname = name;
     $('#game-select-join').hide();
     $('#game-select-lobby').show();
+    $('#btn-start-game').hide();
     $('#lobby-name').html('Lobby: ' + room);
+});
+
+socket.on('lobby left', () => {
+    pname = null;
+    $('#game-select-join').show();
+    $('#game-select-lobby').hide();
+    $('#btn-start-game').hide();
+    $('#lobby-log').html('');
+    $('#btn-start-game').addClass('btn-secondary');
+    $('#btn-start-game').removeClass('btn-success');
+    $('#btn-start-game').attr('disabled', true);
 });
 
 socket.on('create error', (msg) => {
@@ -122,5 +149,19 @@ socket.on('lobby playerlist update', (players) => {
 
 socket.on('lobby parties update', (parties) => {
     update_buttons_from_json(parties);
+});
+
+socket.on('lobby owner', () => {
+    $('#btn-start-game').show();
+});
+
+socket.on('lobby write log', (info) => {
+    write_line_to_lobby_log("<b>></b> " + info);
+});
+
+socket.on('game started', () => {
+    $('#game_select').hide();
+    $('#gui').show();
+    $('#game_frame').css('height', '90vh');
 });
 //#endregion

@@ -94,6 +94,18 @@ class Game {
 		return this.players.length == 0;
 	}
 
+	can_start() {
+		for (var i in this.players) {
+			if (this.players[i].party == null)
+				return false;
+		}
+		return true;
+	}
+
+	start() {
+
+	}
+
 	broadcast(packet, ...info) {
 		for (var p in this.players) {
 			this.players[p].socket.emit(packet, info);
@@ -109,6 +121,11 @@ class Game {
 
 	remove_player(player) {
 		this.players.splice(this.players.indexOf(player), 1);
+		if (this.owner === player && !this.is_empty()) {
+			this.owner = this.players[0];
+			this.owner.socket.emit('lobby owner');
+			this.broadcast('lobby write log', this.owner.name + ' é o novo dono do lobby');
+		}
 		for (var p in this.players) {
 			this.players[p].socket.emit('player left', this.get_all_players_as_json(), player.name);
 		}
@@ -214,10 +231,26 @@ class Game {
 		player.party = null;
 		this.update_parties_disponibility();
 	}
+
+	kick_player(player) {
+		if (!this.is_player_in_game(player)) return;
+		if (player.party != null) {
+			this.remove_player_from_current_party(player);
+			this.broadcast('lobby parties update', this.get_all_parties_as_json());
+		}
+		this.remove_player(player);
+	}
 	//#endregion
 }
-
 //#endregion
+
+class Country {
+	constructor(code, name, type) {
+		this.code = code;
+		this.name = name;
+		this.type = type;
+	}
+}
 
 class Player {
     constructor(name, uuid, socket) {
@@ -368,7 +401,7 @@ app.use(express.static(__dirname + '/frontend'));
 
 function log(info) {
 	var d = new Date();
-	console.log('[' + d.getHours() + ':' + d.getMinutes() + ":" + d.getSeconds() + "] " + info);
+	console.log('[' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2) + ":" + ('0' + d.getSeconds()).slice(-2) + "] " + info);
 }
 
 io.on('connection', (socket) => {
@@ -422,6 +455,7 @@ io.on('connection', (socket) => {
 				log(name + " successfully created room '" + room + "'");
 				socket.emit('join success', name, room);
 				socket.emit('lobby parties update', game.get_all_parties_as_json());
+				socket.emit('lobby owner');
 			} else {
 				socket.emit('create error', 'Já existem muitas salas criadas no momento.');
 				log(name + " couldn't create room '" + room + "': too many rooms");
@@ -464,20 +498,56 @@ io.on('connection', (socket) => {
 		}
 	});
 
-	socket.on('disconnect', () => {
+	socket.on('lobby leave', () => {
 		var info = get_info_by_socket(socket);
 		if (info != null) {
-			if (info.player.party != null) {
-				info.game.remove_player_from_current_party(info.player);
-				socket.emit('lobby parties update', info.game.get_all_parties_as_json());
-			}
-			info.game.remove_player(info.player);
-			info.game.broadcast('lobby parties update', info.game.get_all_parties_as_json());
+			info.game.kick_player(info.player);
+			socket.emit("lobby left");
 			socket_player_game.splice(socket_player_game.indexOf(info), 1);
 			log(info.player.name + " left room '" + info.game.name + "'");
 			if (info.game.is_empty()) {
 				current_games.splice(current_games.indexOf(info.game), 1);
 				log("room '" + info.game.name + "' closed: empty");
+			}
+		}
+	});
+
+	socket.on('disconnect', () => {
+		var info = get_info_by_socket(socket);
+		if (info != null) {
+			info.game.kick_player(info.player);
+			socket_player_game.splice(socket_player_game.indexOf(info), 1);
+			log(info.player.name + " left room '" + info.game.name + "'");
+			if (info.game.is_empty()) {
+				current_games.splice(current_games.indexOf(info.game), 1);
+				log("room '" + info.game.name + "' closed: empty");
+			}
+		}
+	});
+
+	socket.on('game start', () => {
+		var info = get_info_by_socket(socket);
+		if (info != null) {
+			if (info.game.owner === info.player) {
+				if (info.game.can_start()) {
+					
+					for (var i = 5; i > 0; i--) {
+						let finalI = JSON.parse(JSON.stringify(i)); // javascript keeps just referencing i instead of copying it's value
+						setTimeout(() => {
+							info.game.broadcast('lobby write log', 'Começando em ' + finalI + "...");
+						}, (5 - i) * 1000);
+					}
+
+					setTimeout(() => {
+						info.game.start();
+						info.game.broadcast('game started');
+					}, 5000);
+
+				} else {
+					socket.emit('generic error', 'Todos os jogadores precisam selecionar suas civilizações antes de iniciar o jogo');
+				}
+			} else {
+				socket.emit('generic error', 'Somente o dono do lobby pode iniciar o jogo');
 			}
 		}
 	});

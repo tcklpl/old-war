@@ -28,7 +28,7 @@
 
     #game_frame {
         width: 100vw;
-        height: 90vh;
+        height: 100vh;
         overflow-x: hidden;
         border: 3px solid black;
     }
@@ -194,7 +194,8 @@
                 </div>
 
                 <div class="col-xs-12 class-info-control" id="class-info-control">
-                    <button class="btn btn-success">Iniciar Jogo</button>
+                    <button class="btn btn-danger"  id="btn-leave-lobby" onclick="leave_lobby();">Sair do Lobby</button>
+                    <button class="btn btn-secondary" id="btn-start-game" disabled="true" onclick="start_game();">Iniciar Jogo</button>
                 </div>
             </div>
         </div>
@@ -451,6 +452,7 @@
 
         $('#game-select-lobby').hide();
         $('#info-msg').hide();
+        $('#gui').hide();
 
         pname = null;
 
