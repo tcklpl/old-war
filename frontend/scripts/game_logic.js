@@ -44,7 +44,11 @@ countries = {
     SM: {name: "Sumatra"        , info: {party: null, ground_units: 0}, canvas: []},
     NG: {name: "Nova Guinea"    , info: {party: null, ground_units: 0}, canvas: []},
     AU: {name: "Austrália"      , info: {party: null, ground_units: 0}, canvas: []},
-    BO: {name: "Bornea"         , info: {party: null, ground_units: 0}, canvas: []}
+    BO: {name: "Bornea"         , info: {party: null, ground_units: 0}, canvas: []},
+    OR: {name: "Oceano Ártico"  , info: {party: null, ground_units: 0}, canvas: []},
+    OP: {name: "Oceano Pacífico", info: {party: null, ground_units: 0}, canvas: []},
+    OA: {name: "Oceano Atlântico", info: {party: null, ground_units: 0}, canvas: []},
+    OI: {name: "Oceano Índico"   , info: {party: null, ground_units: 0}, canvas: []}
 }
 
 players = [];
