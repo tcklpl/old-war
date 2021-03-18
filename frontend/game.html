@@ -2,7 +2,7 @@
 
 <head>
     <title>WAR AUTISTIC EDTITION</title>
-    <link rel="stylesheet" href="game_map_style.css">
+    <link rel="stylesheet" href="style/game_style.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script type="text/javascript" src="scripts/jquery/jquery-3.6.0.min.js"></script>
@@ -20,120 +20,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<style>
-    body {
-        overflow-x: hidden;
-        font-family: Optima, Segoe, "Segoe UI", Candara, Calibri, Arial, sans-serif;
-    }
-
-    #game_frame {
-        width: 100vw;
-        height: 100vh;
-        overflow-x: hidden;
-        border: 3px solid black;
-    }
-
-    #game_select {
-        position: fixed;
-        z-index: 10;
-        width: 100vw;
-        height: 100vh;
-        background-color: rgba(255, 255, 255, 0.5);
-        -webkit-backdrop-filter: blur(8px);
-        backdrop-filter: blur(8px);
-    }
-    .game_select_inner {
-        background-color: white;
-        box-shadow: 0px 0px 10px #aaa;
-        border-radius: 15px;
-        top: 25vh;
-        display: flex;
-        padding: 30px;
-    }
-
-    .game-lobby {
-        background-color: white;
-        box-shadow: 0px 0px 10px #aaa;
-        height: 100vh;
-        display: flex;
-    }
-
-    .gsi-submit {
-        font-size: large;
-        float: right;
-    }
-
-    .tab {
-        display: inline-block;
-        
-    }
-
-    .error {
-        width: 60vw;
-        position: fixed;
-        left: 20vw;
-        top: 50px;
-        z-index: 20;
-    }
-
-    .btn-class-selector > img {
-        margin-right: 15px !important;
-        display: inline-block;
-        width: 30px;
-        height: 30px;
-    }
-
-    .class-info-holder {
-        overflow: auto !important;
-        display: flex;
-        flex-flow: column;
-    }
-
-    #class-info-place {
-        position: relative;
-        
-    }
-
-    .party-info-a {
-        color:rgb(255, 91, 91) !important;
-        text-decoration: underline !important;
-        cursor: pointer;
-    }
-
-    .info-msg-box {
-        position: absolute;
-        z-index: 100;
-        background-color: white;
-        padding: 5px;
-        border-radius: 5px;
-        box-shadow: 0px 0px 5px #555555;
-        max-width: 40vw;
-        pointer-events: none;
-    }
-
-    .class-info-control > button {
-        top: 5px;
-    }
-
-    .lobby-log {
-        width: calc(100% - 20px);
-        overflow-y: scroll;
-        background-color: #eee;
-        position: absolute;
-        height: 20%;
-        max-height: 250px;
-        bottom: 5px;
-        border-radius: 5px;
-        padding: 5px;
-        right: 10px;
-        left: 10px;
-    }
-</style>
 
 <body bgcolor="#59afe0" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 
     <div class="error" id="alert-placeholder"></div>
     <div class="info-msg-box" id="info-msg"></div>
+
+    <div class="title-box" id="title-box"></div>
     
     <div id="game_select">
         <div class="game_select_inner col-xs-12 col-sm-10 col-md-8 col-lg-6 offset-xs-0 offset-sm-1 offset-md-2 offset-lg-3" id="game-select-join">
@@ -533,6 +426,7 @@
         $('#game-select-lobby').hide();
         $('#info-msg').hide();
         $('#gui').hide();
+        $('#title-box').hide();
 
         pname = null;
 

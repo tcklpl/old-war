@@ -18,17 +18,8 @@ function update_player_list_from_json(playerlist) {
             var party_style = parties_style[allplayers[i].party];
             $('#lobby-player-list').append(`<li class="list-group-item" style="background-color: ${party_style.back_color}; color: ${party_style.front_color};">
                                             ${allplayers[i].name}
-                                            <div style="
-                                                        width: 30px; 
-                                                        height: 30px; 
-                                                        float: right; 
+                                            <div class="lobby-class-icon" style="
                                                         background-color: ${party_style.front_color};
-                                                        -webkit-mask-size: contain;
-                                                        mask-size: contain;
-                                                        -webkit-mask-position: center;
-                                                        mask-position: center;
-                                                        -webkit-mask-repeat: no-repeat;
-                                                        mask-repeat: no-repeat;
                                                         mask-image: url('${party_style.icon}');
                                                         -webkit-mask-image: url('${party_style.icon}');
                                             "></div>
@@ -101,6 +92,19 @@ function start_game() {
     socket.emit('game start');
 }
 
+function display_play_order(playerjson) {
+    var playorder = JSON.parse(playerjson);
+    $('#title-box').append('<h1>Ordem para jogar:</h1>');
+    for (var i in playorder) {
+        var party_style = parties_style[playorder[i].party];
+        $('#title-box').append(`<div style="display: inline-block"><img src="${party_style.icon}" width="100px" height="100px"></div>`);
+    }
+    $('#title-box').show();
+    setTimeout(() => {
+        $('#title-box').hide();
+    }, 2000);
+}
+
 //#region Socket events
 socket.on('join error', (msg) => {
     show_alert("danger", "Erro ao entrar: " + msg);
@@ -163,5 +167,19 @@ socket.on('game started', () => {
     $('#game_select').hide();
     $('#gui').show();
     $('#game_frame').css('height', '90vh');
+});
+
+socket.on('game play order', (playerlist) => {
+    display_play_order(playerlist);
+});
+
+
+socket.on('game select start', (info) => {
+    console.log(info);
+    var infoj = JSON.parse(info);
+    for (var i in info) {
+        canvas_paint_country(infoj[i].country, infoj[i].selectable ? '#00ff00' : '#ff0000');
+    }
+    current_mode = 'SELECTING';
 });
 //#endregion

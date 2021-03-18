@@ -1,5 +1,6 @@
 mouse_x = 0;
 mouse_y = 0;
+current_mode = 'IDLE';
 
 countries = {
     BR: {name: "Brasil"         , info: {party: null, ground_units: 0}, canvas: []},

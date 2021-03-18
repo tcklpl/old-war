@@ -3,15 +3,8 @@ const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
-var Player = require('./player');
+var Player = require('./player').Player;
 var Game = require('./game');
-
-function uuidv4() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-}
 
 current_games = [];
 socket_player_game = [];
@@ -50,8 +43,7 @@ io.on('connection', (socket) => {
 			if (game_room.pass == pass) {
 				if (!game_room.contains_player(name)) {
 					if (!game_room.ingame) {
-						var player_uuid = uuidv4();
-						var player = new Player(name, player_uuid, socket);
+						var player = new Player(name, socket);
 						game_room.add_player(player);
 						socket_player_game.push({socket : socket, player: player, game: game_room});
 
@@ -80,8 +72,7 @@ io.on('connection', (socket) => {
 		log(name + " trying to create room '" + room + "' with pass '" + pass + "'");
 		if (get_game_by_name(room) == null) {
 			if (current_games.length < 1) {
-				var player_uuid = uuidv4();
-				var player = new Player(name, player_uuid, socket);
+				var player = new Player(name, socket);
 				var game = new Game(room, pass, player);
 
 				game.add_player(player);
@@ -167,6 +158,7 @@ io.on('connection', (socket) => {
 		if (info != null) {
 			if (info.game.owner === info.player) {
 				if (info.game.can_start()) {
+					info.game.ingame = true;
 					
 					for (var i = 5; i > 0; i--) {
 						let finalI = JSON.parse(JSON.stringify(i)); // javascript keeps just referencing i instead of copying it's value

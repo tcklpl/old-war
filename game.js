@@ -15,6 +15,7 @@ var Socialismo = require('./parties/socialismo');
 var Capitalismo = require('./parties/capitalismo');
 var Puritanismo = require('./parties/puritanismo');
 var defaults = require('./defaults');
+var _ = require('lodash');
 
 class Game {
     constructor(name, pass, owner) {
@@ -42,6 +43,7 @@ class Game {
             new Capitalismo(this.get_countries_by_code('CA')),
             new Puritanismo(this.get_countries_by_code('IN'))
         ];
+		this.round = -1;
     }
 
     get_countries_by_code(...code) {
@@ -76,7 +78,40 @@ class Game {
 	}
 
 	start() {
+		// randomize player list
+		this.players = this.players
+			.map((a) => ({sort: Math.random(), value: a}))
+			.sort((a, b) => a.sort - b.sort)
+			.map((a) => a.value);
+		this.broadcast('game play order', this.get_all_players_as_json());
 
+		this.request_start_locations();
+	}
+
+	request_start_locations() {
+		for (var i in this.players) {
+			var party = this.players[i].party;
+			var res = "[";
+			for (var j in this.map) {
+				var country = this.map[j];
+				_.forEach(party.start, (s) => {
+					console.log('checking ' + s.code + ' against ' + country.code + `${s.code == country.code}`);
+				});
+				if (party.start != null) {
+					var selectable = false;
+					_.forEach(party.start, (s) => {
+						if (s.code == country.code)
+							selectable = true;
+					});
+				}
+				else
+					var selectable = true;
+				res += `{"country": "${country.code}", "selectable": ${selectable}}`;
+				if (j != (this.map.length - 1))
+					res += ",";
+			}
+			this.players[i].socket.emit('game select start', res + "]");
+		}
 	}
 
 	broadcast(packet, ...info) {

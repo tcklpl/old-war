@@ -48,7 +48,6 @@ function countries() {
     var oceanoAtlântico = new Country('OA', 'Oceano Atlântico', 'ocean');
     var oceanoÍndico = new Country('OI', 'Oceano Índico', 'ocean');
     var oceanoÁrtico = new Country('OR', 'Oceano Ártico', 'ocean');
-    var oceanoAntártico = new Country('ON', 'Oceano Antártico', 'ocean');
 
     brasil.register_ground_border(venezuela, peru, argentina);
     brasil.register_ocean_border(oceanoAtlântico);
@@ -168,7 +167,7 @@ function countries() {
 
     return [brasil, venezuela, peru, argentina, méxico, cuba, newYork, califórnia, labrador, ottawa, vancouver, mackenzie, alaska, groenlândia, islândia, inglaterra,
         frança, alemanha, polônia, moscow, suécia, argélia, egito, sudão, congo, áfricaDoSul, madagascar, orienteMédio, índia, vietnam, china, mongólia, aral, ornsk,
-        dudinka, tchita, vladvostok, sibéria, japão, sumatra, novaGuinea, austrália, bornea, oceanoPacífico, oceanoAtlântico, oceanoÍndico, oceanoÁrtico, oceanoAntártico];
+        dudinka, tchita, vladvostok, sibéria, japão, sumatra, novaGuinea, austrália, bornea, oceanoPacífico, oceanoAtlântico, oceanoÍndico, oceanoÁrtico];
 }
 
 module.exports = {countries};
