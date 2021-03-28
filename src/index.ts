@@ -1,47 +1,50 @@
-const express = require('express');
+import express from 'express';
+import { Socket } from 'socket.io';
+import { Game } from './game';
+import { Player } from './player';
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
-var Player = require('./player').Player;
-var Game = require('./game');
+class SocketConnectionInfo {
+	socket: Socket;
+	player: Player;
+	game: Game;
 
-current_games = [];
-socket_player_game = [];
-
-function get_info_by_socket(socket) {
-	for (var i in socket_player_game) {
-		if (socket_player_game[i].socket === socket)
-			return socket_player_game[i];
+	constructor(socket: Socket, player: Player, game: Game) {
+		this.socket = socket;
+		this.player = player;
+		this.game = game;
 	}
-	return null;
 }
 
-function get_game_by_name(name) {
-    for (var i = 0; i < current_games.length; i++) {
-		var g = current_games[i];
-		if (g.name == name)
-            return g;
-	}
-    return null;
+var current_games = new Array<Game>();
+var socket_player_game = new Array<SocketConnectionInfo>();
+
+function get_info_by_socket(socket: Socket): SocketConnectionInfo | null {
+	return socket_player_game.filter(s => s.socket === socket)[0];
+}
+
+function get_game_by_name(name: string): Game | null {
+	return current_games.filter(g => g.name == name)[0];
 }
 
 // Serve /frontend as the site root for the client
-app.use(express.static(__dirname + '/frontend'));
+app.use(express.static(__dirname + '/../frontend'));
 
-function log(info) {
+function log(info: string) {
 	var d = new Date();
 	console.log('[' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2) + ":" + ('0' + d.getSeconds()).slice(-2) + "] " + info);
 }
 
-io.on('connection', (socket) => {
+io.on('connection', (socket: Socket) => {
 
     socket.on('join room', (room, pass, name) => {
 		log(name + " trying to join '" + room + "' with pass '" + pass + "'");
 		var game_room = get_game_by_name(room);
 		if (game_room != null) {
 			if (game_room.pass == pass) {
-				if (!game_room.contains_player(name)) {
+				if (!game_room.contains_player_name(name)) {
 					if (!game_room.ingame) {
 						var player = new Player(name, socket);
 						game_room.add_player(player);
@@ -163,13 +166,13 @@ io.on('connection', (socket) => {
 					for (var i = 5; i > 0; i--) {
 						let finalI = JSON.parse(JSON.stringify(i)); // javascript keeps just referencing i instead of copying it's value
 						setTimeout(() => {
-							info.game.broadcast('lobby write log', 'Começando em ' + finalI + "...");
+							info?.game.broadcast('lobby write log', 'Começando em ' + finalI + "...");
 						}, (5 - i) * 1000);
 					}
 
 					setTimeout(() => {
-						info.game.start();
-						info.game.broadcast('game started');
+						info?.game.start();
+						info?.game.broadcast('game started');
 					}, 5000);
 
 				} else {
