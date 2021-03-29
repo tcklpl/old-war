@@ -14,7 +14,7 @@ function update_player_list_from_json(playerlist) {
     $('#lobby-player-list').empty();
     var all_selected = true;
     for (var i in allplayers) {
-        if (allplayers[i].party != "null") {
+        if (allplayers[i].party != "null" && allplayers[i].party != "undefined") {
             var party_style = parties_style[allplayers[i].party];
             $('#lobby-player-list').append(`<li class="list-group-item" style="background-color: ${party_style.back_color}; color: ${party_style.front_color};">
                                             ${allplayers[i].name}
@@ -175,9 +175,8 @@ socket.on('game play order', (playerlist) => {
 
 
 socket.on('game select start', (info) => {
-    console.log(info);
     var infoj = JSON.parse(info);
-    for (var i in info) {
+    for (var i in infoj) {
         canvas_paint_country(infoj[i].country, infoj[i].selectable ? '#00ff00' : '#ff0000');
     }
     current_mode = 'SELECTING';

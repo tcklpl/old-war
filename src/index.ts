@@ -18,6 +18,7 @@ class SocketConnectionInfo {
 	}
 }
 
+const max_games = 1;
 var current_games = new Array<Game>();
 var socket_player_game = new Array<SocketConnectionInfo>();
 
@@ -74,7 +75,7 @@ io.on('connection', (socket: Socket) => {
 	socket.on('create room', (room, pass, name) => {
 		log(name + " trying to create room '" + room + "' with pass '" + pass + "'");
 		if (get_game_by_name(room) == null) {
-			if (current_games.length < 1) {
+			if (current_games.length < max_games) {
 				var player = new Player(name, socket);
 				var game = new Game(room, pass, player);
 
