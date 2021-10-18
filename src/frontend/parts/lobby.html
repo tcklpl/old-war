@@ -1,0 +1,39 @@
+<div class="game-lobby col-xs-12 col-sm-10 offset-xs-0 offset-sm-1" style="height: 100vh;" id="game-select-lobby">
+    <div class="col-xs-12 col-sm-6 col-md-4 float-left">
+        <h2 id="lobby-name"></h2>
+        <a id="lobby-player-count"></a>
+        <ul id="lobby-player-list" class="list-group"></ul>
+
+        <div class="lobby-log" id="lobby-log"></div>
+    </div>
+    <div class="col-xs-12 col-sm-6 col-md-8 float-right lobby-parties-info">
+        
+        <div class="col-xs-12 class-info-buttons" id="class-info-buttons">
+            <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('ANQ');" ondblclick="set_player_party('ANQ');" id="btn-class-ANQ"><img src="img/icons/anq.svg">Anarquismo</button>
+            <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('ISI');" ondblclick="set_player_party('ISI');" id="btn-class-ISI"><img src="img/icons/isis.svg">ISIS</button>
+            <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('FDL');" ondblclick="set_player_party('FDL');" id="btn-class-FDL"><img src="img/icons/feudalismo.svg">Feudalismo</button>
+            <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('VKG');" ondblclick="set_player_party('VKG');" id="btn-class-VKG"><img src="img/icons/vikings.svg">Vikings</button>
+            <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('ZMB');" ondblclick="set_player_party('ZMB');" id="btn-class-ZMB"><img src="img/icons/zombie.svg">Zumbis</button>
+            <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('ONU');" ondblclick="set_player_party('ONU');" id="btn-class-ONU"><img src="img/icons/onu.svg">ONU</button>
+            <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('PRT');" ondblclick="set_player_party('PRT');" id="btn-class-PRT"><img src="img/icons/pirate.svg">Piratas</button>
+            <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('CAT');" ondblclick="set_player_party('CAT');" id="btn-class-CAT"><img src="img/icons/igreja.svg">Igreja</button>
+            <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('NZI');" ondblclick="set_player_party('NZI');" id="btn-class-NZI"><img src="img/icons/nazi.svg">Nazismo</button>
+            <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('FSC');" ondblclick="set_player_party('FSC');" id="btn-class-FSC"><img src="img/icons/fascism.svg">Fascismo</button>
+            <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('JEY');" ondblclick="set_player_party('JEY');" id="btn-class-JEY"><img src="img/icons/joeyismo.svg">Joeyismo</button>
+            <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('SQR');" ondblclick="set_player_party('SQR');" id="btn-class-SQR"><img src="img/icons/spqr.svg">SPQR</button>
+            <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('RST');" ondblclick="set_player_party('RST');" id="btn-class-RST"><img src="img/icons/resistencia.svg">Resistência</button>
+            <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('SCL');" ondblclick="set_player_party('SCL');" id="btn-class-SCL"><img src="img/icons/socialismo.svg">Socialismo</button>
+            <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('CTL');" ondblclick="set_player_party('CTL');" id="btn-class-CTL"><img src="img/icons/capitalism.svg">Capitalismo</button>
+            <button class="btn btn-default btn-class-selector" onclick="update_lobby_party_info('PTN');" ondblclick="set_player_party('PTN');" id="btn-class-PTN"><img src="img/icons/puritanism.svg">Puritanismo</button>
+        </div>
+        
+        <div class="col-xs-12 class-info-holder" id="class-info-holder">
+            <div id="class-info-place"></div>
+        </div>
+
+        <div class="col-xs-12 class-info-control" id="class-info-control">
+            <button class="btn btn-danger"  id="btn-leave-lobby" onclick="leave_lobby();">Sair do Lobby</button>
+            <button class="btn btn-secondary" id="btn-start-game" disabled="true" onclick="start_game();">Iniciar Jogo</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,166 @@
+<html>
+
+<head>
+    <title>WAR AUTISTIC EDTITION</title>
+
+    <link rel="stylesheet" href="style/game_style.css">
+    <link rel="stylesheet" href="style/loading.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    
+    <script type="text/javascript" src="scripts/jquery/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="scripts/jquery/jquery.imagemapster.min.js"></script>
+    <script type="text/javascript" src="scripts/socket.io.min.js"></script>
+
+    <script type="text/javascript" src="scripts/game.js"></script>
+    <!--<script type="text/javascript" src="scripts/requests/requests.js"></script>
+    <script type="text/javascript" src="scripts/page_loading.js"></script>
+    <script type="text/javascript" src="scripts/map/map_area_coords.js"></script>
+    <script type="text/javascript" src="scripts/game_rules.js"></script>
+    <script type="text/javascript" src="scripts/game_logic.js"></script>
+    <script type="text/javascript" src="scripts/game_connection_logic.js"></script>-->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" 
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" 
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body bgcolor="#59afe0" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
+
+    <div class="loading-screen" id="loading-screen">
+        <div class="loading-screen-content" align="center">
+            <h2>Loading... </h2><br>
+            <h3 id="loading-percentage"></h3>
+        </div>
+    </div>
+
+    <div class="error" id="alert-placeholder"></div>
+    <div class="info-msg-box" id="info-msg"></div>
+
+    <div class="title-box" id="title-box"></div>
+    
+    <div id="game_select">
+        <!-- This part is splitted in parts/, I did this to make this file easier to read. These parts are reuqetsed via AJAX below. -->
+    </div>
+
+    <div id="game_frame">
+        <div id="all_color_canvas" style="position: relative;"></div>
+        <img src="img/mapa.png" width="1920" height="1080" border="0" alt="" usemap="#mapa_Map" id="warmap" draggable="false">
+        <map name="mapa_Map" id="global_map">
+            <!-- This will be populated in the javascript -->
+        </map>
+    </div>
+
+    <div id="gui">
+
+    </div>
+
+    <script type="text/javascript">
+
+        pname = null;
+
+        selected = false;
+        last_selected = null;
+
+        $(document).mousemove(function(event) {
+            mouse_x = event.pageX;
+            mouse_y = event.pageY;
+        });
+
+        function registerLobbyEvents() {
+            $('#join-form').submit(function(e) {
+                e.preventDefault();
+                
+                let room = $('#jfj-id');
+                let pass = $('#jfj-ps');
+                let name = $('#jfj-nm');
+
+                if (room.val() && name.val()) {
+                    game.gameRoom.join(room.val(), pass.val(), name.val());
+                    room.val('');
+                    pass.val('');
+                    name.val('');
+                }
+            });
+
+            $('#create-form').submit(function(e) {
+                e.preventDefault();
+                
+                let room = $('#jfc-id');
+                let pass = $('#jfc-ps');
+                let name = $('#jfc-nm');
+
+                if (room.val() && name.val()) {
+                    game.gameRoom.create(room.val(), pass.val(), name.val());
+                    room.val('');
+                    pass.val('');
+                    name.val('');
+                }
+            });
+        }
+
+        $(document).ready(function() { 
+
+            game.pageLoader.loadedPartCallback = (loadedParts) => {
+                $('#loading-percentage').html(loadedParts + "/" + game.pageLoader.partsToLoad.length);
+            }
+
+            game.pageLoader.fullLoadCallback = () => {
+
+                $('#game-select-lobby').hide();
+                $('#info-msg').hide();
+                $('#gui').hide();
+                $('#title-box').hide();
+                $('#loading-screen').fadeOut();
+
+                registerLobbyEvents();
+
+                $('#warmap').mapster({
+                    mapKey: 'data-country',
+                    singleSelect: true,
+                    clickNavigate: true,
+                    fill: true,
+                    fillColor: '000000',
+                    fillOpacity: 0.15,
+                    fade: true,
+                    fadeDuration: 50,
+                    stroke: false,
+                    strokeColor: 'ff0000',
+                    strokeOpacity: 0.5,
+                    strokeWidth: 1,
+                    onClick: function(e) {
+                        if (e.key == last_selected) {
+                            selected = false;
+                            last_selected = null;
+                            $('#gui').html("");
+                        } else {
+                            selected = true;
+                            last_selected = e.key;
+                            $('#gui').html(get_content_div_per_country(e.key));
+                        }
+                    },
+                    onMouseover: function (e) {
+                        if (!selected)
+                            $('#gui').html(get_content_div_per_country(e.key));
+                    },
+                    onMouseout: function (e) {
+                        if (!selected)
+                            $('#gui').html("");
+                    }
+                });
+
+                canvas_populate();
+            };
+
+            game.pageLoader.loadMainPage();
+            
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,41 +1,44 @@
-var socket = io();
+import { io } from "socket.io-client"
+import { Callback } from "./callbacks/callback";
+import { MutuallyExclusiveCallback } from "./callbacks/mut_exclusive_callback";
 
-function request_room_join(room, pass, name) {
-    socket.emit('join room', room, pass, name);
-}
+class GameConnection {
 
-function request_room_creation(room, pass, name) {
-    socket.emit('create room', room, pass, name);
-}
+    private socket = io();
+    private callbacks: Map<string, Array<Callback>> = new Map();
 
-function update_player_list_from_json(playerlist) {
-    var allplayers = JSON.parse(playerlist);
-    players = allplayers;
-    $('#lobby-player-list').empty();
-    var all_selected = true;
-    for (var i in allplayers) {
-        if (allplayers[i].party != "null" && allplayers[i].party != "undefined") {
-            var party_style = parties_style[allplayers[i].party];
-            $('#lobby-player-list').append(`<li class="list-group-item" style="background-color: ${party_style.back_color}; color: ${party_style.front_color};">
-                                            ${allplayers[i].name}
-                                            <div class="lobby-class-icon" style="
-                                                        background-color: ${party_style.front_color};
-                                                        mask-image: url('${party_style.icon}');
-                                                        -webkit-mask-image: url('${party_style.icon}');
-                                            "></div>
-                                            </li>`);
-        } else {
-            $('#lobby-player-list').append('<li class="list-group-item">' + allplayers[i].name + "</li>");
-            all_selected = false;
-        }
+    constructor() {
+        this.socket.onAny((msg, ...args: any[]) => this.triggerCallbacks(msg, args));
     }
-    $('#lobby-player-count').html('Jogadores no lobby: ' + allplayers.length);
-    if (all_selected) {
-        $('#btn-start-game').removeClass('btn-secondary');
-        $('#btn-start-game').addClass('btn-success');
-        $('#btn-start-game').attr('disabled', false);
+
+    private ensureCallbackListExists(msg: string) {
+        this.callbacks.set(msg, this.callbacks.get(msg) || []);
     }
+
+    private triggerCallbacks(msg: string, ...args: any[]) {
+        this.callbacks.get(msg)?.forEach(cb => cb.call(msg, args));
+        this.callbacks.set(msg, this.callbacks.get(msg)?.filter(cb => cb.shouldRemove()) || []);
+    }
+
+    registerCallback(msg: string, toCall: (...args: any[]) => void, uses?: number) {
+        this.ensureCallbackListExists(msg);
+        this.callbacks.get(msg)?.push(new Callback(toCall, uses));
+    }
+
+    registerMutuallyExclusiveCallback(callback: MutuallyExclusiveCallback, ...messages: string[]) {
+        messages.forEach(msg => {
+            this.ensureCallbackListExists(msg);
+            this.callbacks.get(msg)?.push(callback);
+        });
+    }
+
+    emit(msg: string, ...args: any[]) {
+        this.socket.emit(msg, args);
+    }
+
 }
+
+export { GameConnection }
 
 function get_player_by_name(name) {
     if (!players) return null;
@@ -106,33 +109,6 @@ function display_play_order(playerjson) {
 }
 
 //#region Socket events
-socket.on('join error', (msg) => {
-    show_alert("danger", "Erro ao entrar: " + msg);
-});
-
-socket.on('join success', (name, room) => {
-    pname = name;
-    $('#game-select-join').hide();
-    $('#game-select-lobby').show();
-    $('#btn-start-game').hide();
-    $('#lobby-name').html('Lobby: ' + room);
-});
-
-socket.on('lobby left', () => {
-    pname = null;
-    $('#game-select-join').show();
-    $('#game-select-lobby').hide();
-    $('#btn-start-game').hide();
-    $('#lobby-log').html('');
-    $('#btn-start-game').addClass('btn-secondary');
-    $('#btn-start-game').removeClass('btn-success');
-    $('#btn-start-game').attr('disabled', true);
-});
-
-socket.on('create error', (msg) => {
-    show_alert("danger", "Erro ao criar sala: " + msg);
-});
-
 socket.on('generic error', (msg) => {
     show_alert("danger", "Erro: " + msg);
 });
@@ -180,5 +156,10 @@ socket.on('game select start', (info) => {
         canvas_paint_country(infoj[i].country, infoj[i].selectable ? '#00ff00' : '#ff0000');
     }
     current_mode = 'SELECTING';
+});
+
+socket.on('game request', (info) => {
+    console.log(info);
+    requestManager.acceptRequest(info);
 });
 //#endregion

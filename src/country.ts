@@ -2,17 +2,23 @@ enum CountryType {
 	LAND, SEA
 }
 
+enum Continent {
+	NORTH_AMERICA, SOUTH_AMERICA, AFRICA, EUROPE, ASIA, OCEANIA, SEA
+}
+
 class Country {
 	code: string;
 	name: string;
 	type: CountryType;
 	ground_borders: Array<Country>;
 	ocean_borders: Array<Country>;
+	continent: Continent;
 
-	constructor(code: string, name: string, type: CountryType) {
+	constructor(code: string, name: string, type: CountryType, continent: Continent) {
 		this.code = code;
 		this.name = name;
 		this.type = type;
+		this.continent = continent;
 		this.ground_borders = new Array<Country>();
 		this.ocean_borders = new Array<Country>();
 	}
@@ -34,4 +40,4 @@ class Country {
 	}
 }
 
-export {Country, CountryType}
+export {Country, CountryType, Continent}

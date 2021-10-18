@@ -1,0 +1,17 @@
+#loading-screen {
+    width: 100vw;
+    height: 100vh;
+    background-color: rgb(34, 34, 34);
+    z-index: 99;
+    color: rgb(221, 221, 221);
+    position: absolute;
+}
+
+.loading-screen-content {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}

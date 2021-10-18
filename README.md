@@ -25,9 +25,9 @@ For now all the user interface is in **brazilian portuguese**, I may add an engl
 
 ## Project Structure, Building, Dependencies and Running
 ***
-The project is developed using [Node.js](https://nodejs.org/) with [TypeScript](https://www.typescriptlang.org/) for the backend and plain HTML/JavaScript/CSS for the frontend. Though I may translate the frontend to TypeScript some day.
+The project is developed using [Node.js](https://nodejs.org/) with [TypeScript](https://www.typescriptlang.org/) for the backend and HTML, JavaScript and SCSS for the frontend. Though I may translate the frontend to TypeScript some day.
 
-The backend is located in `src/` and the frontend in `frontend/`.
+The backend is located in `src/` and the frontend in `src/frontend/`.
 
 The backend uses [Express](https://expressjs.com/) and [Socket.io](https://socket.io/), while the frontend uses [JQuery](https://jquery.com/), [Bootstrap](https://getbootstrap.com/), [ImageMapster](https://github.com/jamietre/ImageMapster), and of course, the [Socket.io](https://socket.io/) client side js.
 
@@ -41,12 +41,19 @@ cd War/
 ```
 npm install
 ```
-3. Create `dist/` folder and compile the typescript (this folder will contain the result of the backend typescript compilation)
+3. Create `dist/` folder and compile eveything (I created a Makefile for ease of use when compiling, but all commands were made for a GNU/Linux machine. If you're using Windows, I recommend installing WSL so you can run this properly. If you are unable/doesn't want to install WSL or use a GNU/Linux shell, you can run all commands on item 4)
 ```
 mkdir dist
 tsc
 ```
-4. And then you can run the project by using:
+4. **ALT: No GNU/Linux shell or access to Make**: this is just a transcription of the [Makefile](Makefile).
+```
+tsc
+rsync -a --exclude '*.scss' src/frontend/ dist/frontend
+sass src/frontend/style:dist/frontend/style
+```
+> Please note the use of the commands `tsc`, `rsync` and `sass`. `tsc` and `sass` are, in order, the compilers for TypeScript and SCSS, but if you're not on GNU/Linux you'll need to find something equivalent to `rsync` (or just manually copy the files too :))
+5. And then you can run the project by using:
 ```
 node dist/index.js
 ```

@@ -19,6 +19,9 @@ import { Player } from "./player";
 import { Country } from "./country";
 import { Party } from "./parties/party";
 import { Socket } from "socket.io";
+import { OptionRequest } from "./requests/option_request";
+import { GameRequestHandler } from "./requests/request_handler";
+import { GameRequestCallback } from "./requests/request_callback";
 
 class Game {
 	name: string;
@@ -29,6 +32,7 @@ class Game {
 	map: Array<Country>;
 	parties: Array<Party>;
 	round: number;
+	requestHandler: GameRequestHandler = new GameRequestHandler();
 
     constructor(name: string, pass: string, owner: Player) {
         this.name = name;
@@ -87,16 +91,31 @@ class Game {
 
 	request_start_locations(): void {
 		this.players.forEach(p => {
-			var res = "[";
-			for (var i = 0; i < this.map.length; i++) {
-				var country = this.map[i];
-				var selectable = p.party?.start ? p.party?.start.includes(country) : true;
-				res += `{"country": "${country.code}", "selectable": ${selectable}}`;
-				if (i != (this.map.length - 1))
-					res += ",";
-			}
-			p.socket.emit('game select start', res + "]");
+			// var res = "[";
+			// for (var i = 0; i < this.map.length; i++) {
+			// 	var country = this.map[i];
+			// 	var selectable = p.party?.start ? p.party?.start.includes(country) : true;
+			// 	res += `{"country": "${country.code}", "selectable": ${selectable}}`;
+			// 	if (i != (this.map.length - 1))
+			// 		res += ",";
+			// }
+			// p.socket.emit('game select start', res + "]");
+			let selectableList: Array<string> = [];
+			this.map.forEach(c => {
+				let selectable = p.party?.start ? p.party?.start.includes(c) : true;
+				if (selectable)
+					selectableList.push(c.code);
+			});
+			this.requestHandler.sendGameRequest(
+				new OptionRequest( "starting_country",
+					selectableList, new GameRequestCallback( 
+						(res: string) => {console.log("response: " + res)}, 
+						(error: string) => {console.log("error: " + error)}
+						)
+					),
+				 p.socket);
 		});
+		
 	}
 
 	broadcast(packet: string, ...info: string[]): void {

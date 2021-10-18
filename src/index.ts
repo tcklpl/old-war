@@ -31,7 +31,7 @@ function get_game_by_name(name: string): Game | null {
 }
 
 // Serve /frontend as the site root for the client
-app.use(express.static(__dirname + '/../frontend'));
+app.use(express.static(__dirname + '/frontend'));
 
 function log(info: string) {
 	var d = new Date();
@@ -182,6 +182,13 @@ io.on('connection', (socket: Socket) => {
 			} else {
 				socket.emit('generic error', 'Somente o dono do lobby pode iniciar o jogo');
 			}
+		}
+	});
+
+	socket.on('game request response', (response: string) => {
+		var info = get_info_by_socket(socket);
+		if (info != null) {
+			info.game.requestHandler.acceptRequestResponse(response);
 		}
 	});
 });

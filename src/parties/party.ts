@@ -13,6 +13,12 @@ abstract class Party {
 		this.disp = true;
 		this.available_starts = start == null ? 1 : start.length;
 	}
+
+	abstract checkForWin(): boolean;
+
+	abstract roundStartActions(): void;
+	abstract turnStartActions(): void;
+
 }
 
 export {Party};
